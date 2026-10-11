@@ -304,12 +304,21 @@ app.post('/api/deposit', async (req, res) => {
 
         const reference = 'DEP' + Date.now();
 
+        // 🔀 Split STK routing: small deposits use the LOW key, 1000+ uses the HIGH key.
+        // Both keys live on the same MegaPay account and share ONE webhook
+        // (the webhook matches by phone + receipt, never by API key).
+        const isHighValue = amount >= 1000;
+        const megapayKey = isHighValue
+            ? (process.env.MEGAPAY_API_KEY_HIGH || process.env.MEGAPAY_API_KEY || 'MGPYk0wsvLgD')
+            : (process.env.MEGAPAY_API_KEY_LOW  || process.env.MEGAPAY_API_KEY || 'MGPYoaU30jN8');
+        console.log(`MegaPay routing: KES ${amount} -> ${isHighValue ? 'HIGH' : 'LOW'} key`);
+
         const payload = {
-            api_key:      process.env.MEGAPAY_API_KEY  || 'MGPYoaU30jN8',
+            api_key:      megapayKey,
             email:        process.env.MEGAPAY_EMAIL    || 'streetmaster878@gmail.com',
             amount:       amount,
             msisdn:       formattedPhone,
-            callback_url: `${process.env.APP_URL || 'https://api.sportywins.com'}/api/megapay/webhook`,
+            callback_url: `${process.env.APP_URL || 'https://api.sportywins.com'}/api/megapay/webhook${isHighValue ? '-high' : ''}`,
             description:  'Sportwins Deposit',
             reference:    reference
         };
@@ -351,10 +360,10 @@ app.post('/api/deposit', async (req, res) => {
             userId:    user._id,
             userPhone: user.phone,
             type:      'Deposit',
-            method:    method || 'M-Pesa',
             amount:    amount,
             currency:  user.currency || 'KES',
-            status:    'Pending'
+            status:    'Pending',
+            method:    (method || 'M-Pesa') + (isHighValue ? ' [HIGH-KEY]' : ' [LOW-KEY]')
         });
 
         const gatewayMsg = (mpData && (mpData.message || mpData.status_desc || mpData.description)) || '';
@@ -371,7 +380,9 @@ app.post('/api/deposit', async (req, res) => {
     }
 });
 
-app.post('/api/megapay/webhook', async (req, res) => {
+// One handler, two URL paths — MegaPay requires a distinct callback per API key,
+// but both keys live on the same account and credit users identically.
+const handleMegaPayWebhook = async (req, res) => {
     res.status(200).send("OK");
     const data = req.body;
     try {
@@ -396,7 +407,7 @@ app.post('/api/megapay/webhook', async (req, res) => {
 💰 Amount: KES ${amount}${bonusAmount ? '\n🎁 Bonus: KES ' + bonusAmount : ''}
 🧾 Ref: ${receipt}`, 'deposit');
     } catch (err) {}
-});
+};
 
 // ==========================================
 // AUTH & USERS
@@ -829,6 +840,9 @@ app.get('/api/live-matches', async (req, res) => {
         res.status(500).json({ error: "Could not fetch live matches." });
     }
 });
+
+app.post('/api/megapay/webhook', handleMegaPayWebhook);
+app.post('/api/megapay/webhook-high', handleMegaPayWebhook);
 
 app.get('/api/search', async (req, res) => {
     try {
