@@ -37,7 +37,7 @@ app.use((req, res, next) => {
 app.use(mongoSanitize());
 
 app.use(cors({
-    origin: ['https://chezacrush.com', 'http://chezacrush.com', 'https://www.chezacrush.com', 'https://chezacrushadmin.web.app'],
+    origin: ['https://chezacrush.com', 'http://chezacrush.com', 'https://www.chezacrush.com', 'https://chezacrushadmin.vercel.app'],
     methods: ['GET', 'POST', 'PUT', 'DELETE', 'OPTIONS'],
     credentials: true,
     allowedHeaders: ['Content-Type', 'Authorization']
