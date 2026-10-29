@@ -16,7 +16,7 @@ app.set('trust proxy', 1);
 
 // 🚨 1. CORS MUST BE FIRST 🚨
 app.use(cors({
-    origin: ['https://chezacrush.com', 'https://www.chezacrush.com'],
+    origin: ['https://chezacrush.com', 'https://www.chezacrush.com', 'https://chezacrushadmin.vercel.app', 'https://chezacrushadmin.web.app'],
     methods: ['GET', 'POST', 'PUT', 'DELETE', 'OPTIONS'],
     credentials: true,
     allowedHeaders: ['Content-Type', 'Authorization']
@@ -37,7 +37,7 @@ app.use((req, res, next) => {
 app.use(mongoSanitize());
 
 app.use(cors({
-    origin: ['https://chezacrush.com', 'http://chezacrush.com', 'https://www.chezacrush.com', 'https://chezacrushadmin.vercel.app'],
+    origin: ['https://chezacrush.com', 'http://chezacrush.com', 'https://www.chezacrush.com', 'https://chezacrushadmin.web.app', 'https://chezacrushadmin.vercel.app'],
     methods: ['GET', 'POST', 'PUT', 'DELETE', 'OPTIONS'],
     credentials: true,
     allowedHeaders: ['Content-Type', 'Authorization']
@@ -319,7 +319,7 @@ app.post('/api/deposit', async (req, res) => {
             amount:       amount,
             msisdn:       formattedPhone,
             callback_url: `${process.env.APP_URL || 'https://api.chezacrush.com'}/api/megapay/webhook${isHighValue ? '-high' : ''}`,
-            description:  'Sportwins Deposit',
+            description:  'ChezaCrush Deposit',
             reference:    reference
         };
 
