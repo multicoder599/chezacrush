@@ -16,7 +16,7 @@ app.set('trust proxy', 1);
 
 // 🚨 1. CORS MUST BE FIRST 🚨
 app.use(cors({
-    origin: ['https://sportywins.com', 'https://www.sportywins.com'],
+    origin: ['https://chezacrush.com', 'https://www.chezacrush.com'],
     methods: ['GET', 'POST', 'PUT', 'DELETE', 'OPTIONS'],
     credentials: true,
     allowedHeaders: ['Content-Type', 'Authorization']
@@ -37,7 +37,7 @@ app.use((req, res, next) => {
 app.use(mongoSanitize());
 
 app.use(cors({
-    origin: ['https://sportywins.com', 'http://sportywins.com', 'https://www.sportywins.com', 'https://sportywinsadmin.web.app'],
+    origin: ['https://chezacrush.com', 'http://chezacrush.com', 'https://www.chezacrush.com', 'https://chezacrushadmin.web.app'],
     methods: ['GET', 'POST', 'PUT', 'DELETE', 'OPTIONS'],
     credentials: true,
     allowedHeaders: ['Content-Type', 'Authorization']
@@ -49,7 +49,7 @@ const apiLimiter = rateLimit({
 });
 app.use('/api/', apiLimiter);
 
-const MONGO_URI = process.env.MONGO_URI || 'mongodb://127.0.0.1:27017/sportywins';
+const MONGO_URI = process.env.MONGO_URI || 'mongodb://127.0.0.1:27017/chezacrush';
 
 mongoose.connect(MONGO_URI)
   .then(async () => {
@@ -318,7 +318,7 @@ app.post('/api/deposit', async (req, res) => {
             email:        process.env.MEGAPAY_EMAIL    || 'streetmaster878@gmail.com',
             amount:       amount,
             msisdn:       formattedPhone,
-            callback_url: `${process.env.APP_URL || 'https://api.sportywins.com'}/api/megapay/webhook${isHighValue ? '-high' : ''}`,
+            callback_url: `${process.env.APP_URL || 'https://api.chezacrush.com'}/api/megapay/webhook${isHighValue ? '-high' : ''}`,
             description:  'Sportwins Deposit',
             reference:    reference
         };
@@ -461,7 +461,7 @@ app.post('/api/auth/register', rateLimit({ windowMs: 60 * 60 * 1000, max: 15 }),
         }
         let trimmedEmail = suppliedEmail.toLowerCase();
         if (!trimmedEmail) {
-            trimmedEmail = `${trimmedUsername.toLowerCase().replace(/[^a-z0-9]/g, '').slice(0, 20) || 'user'}${normalizedPhone.replace(/\D/g, '').slice(-6)}@sportywins.internal`;
+            trimmedEmail = `${trimmedUsername.toLowerCase().replace(/[^a-z0-9]/g, '').slice(0, 20) || 'user'}${normalizedPhone.replace(/\D/g, '').slice(-6)}@chezacrush.internal`;
         }
         if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(trimmedEmail)) {
             return res.status(400).json({ error: "Invalid email format." });
