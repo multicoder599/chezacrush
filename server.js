@@ -894,7 +894,7 @@ app.post('/api/bets/place', async (req, res) => {
         }));
 
         const newBet = new Bet({
-            userId: user._id, ticketId: "SW-" + Math.random().toString(36).substring(2, 8).toUpperCase(),
+            userId: user._id, ticketId: "CC-" + Math.random().toString(36).substring(2, 8).toUpperCase(),
             bookingCode: bookingCode || undefined, stake, totalOdds, potentialReturn,
             currency: currency || user.currency, userTimezone: user.timezone || 'Africa/Nairobi', legs: trackedLegs
         });
